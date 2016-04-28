@@ -1,0 +1,28 @@
+{
+  "name": "ltd-beget/php-vim",
+  "license": "MIT",
+  "type": "library",
+  "description": "Console helper for php to open vim in script, gives it control and returns control to script after close vim",
+  "keywords": [
+    "vim"
+  ],
+  "authors": [
+    {
+      "name": "Viskov Sergey",
+      "homepage": "https://github.com/voksiv"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "require-dev": {
+    "theseer/phpdox": "0.8.*",
+    "phpunit/phpunit": "5.2.*",
+    "tideways/profiler": "2.0.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "LTDBeget\\vim": "src"
+    }
+  }
+}
