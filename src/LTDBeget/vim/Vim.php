@@ -76,7 +76,7 @@ final class Vim
      */
     public function isChanged(string $key) : bool
     {
-        return $this->originalContent[$key] === $this->getContent($key);
+        return $this->originalContent[$key] !== $this->getContent($key);
     }
 
     /**
