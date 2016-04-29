@@ -58,14 +58,14 @@ final class Vim
     }
 
     /**
-     * @param string $key
+     * @param string $filename
      * @param string $content
      * @return Vim
      */
-    public function addFileContent(string $key, string $content) : Vim
+    public function addFileContent(string $filename, string $content) : Vim
     {
-        $this->originalContent[$key] = $content;
-        $this->tempFiles[$key]       = $this->makeTemporaryFile($content);
+        $this->originalContent[$filename] = $content;
+        $this->tempFiles[$filename]       = $this->makeTemporaryFile($filename, $content);
         
         return $this;
     }
@@ -85,19 +85,29 @@ final class Vim
      */
     public function getContent(string $key) : string
     {
-        return file_get_contents(stream_get_meta_data($this->tempFiles[$key])['uri']);
+        return file_get_contents($this->tempFiles[$key]);
     }
 
     /**
-     * @param $content
+     * @param string $name
+     * @param string $content
      * @return resource
      */
-    private function makeTemporaryFile($content)
+    private function makeTemporaryFile(string $name, string $content)
     {
-        $tempFile = tmpfile();
-        $filename = stream_get_meta_data($tempFile)['uri'];
+        $filename = tempnam(sys_get_temp_dir(), $name.'_');
         file_put_contents($filename, $content);
-        return $tempFile;
+        return $filename;
+    }
+
+
+    public function __destruct()
+    {
+        foreach ($this->getFilesPath() as $fileName) {
+            if(is_file($fileName)) {
+                unlink($fileName);
+            }
+        }
     }
 
     /**
@@ -106,8 +116,8 @@ final class Vim
     private function getFilesPath() : array 
     {
         $paths =[];
-        foreach ($this->tempFiles as $fileResource) {
-            $paths[] = stream_get_meta_data($fileResource)['uri'];
+        foreach ($this->tempFiles as $fileName) {
+            $paths[] = $fileName;
         }
         return $paths;
     }
