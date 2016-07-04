@@ -35,6 +35,33 @@ final class Vim
     private $originalContent;
 
     /**
+     * @var string
+     */
+    private $prependCommand;
+
+
+    /**
+     * @return string
+     */
+    public function getPrependCommand()
+    {
+        return $this->prependCommand;
+    }
+
+
+    /**
+     * @param string $prependCommand
+     *
+     * @return Vim
+     */
+    public function setPrependCommand($prependCommand) : Vim
+    {
+        $this->prependCommand = $prependCommand;
+
+        return $this;
+    }
+
+    /**
      * Vim constructor.
      *
      * @param Options|NULL $options
@@ -66,7 +93,7 @@ final class Vim
     {
         $this->originalContent[$filename] = $content;
         $this->tempFiles[$filename]       = $this->makeTemporaryFile($filename, $content);
-        
+
         return $this;
     }
 
@@ -113,7 +140,7 @@ final class Vim
     /**
      * @return array
      */
-    private function getFilesPath() : array 
+    private function getFilesPath() : array
     {
         $paths =[];
         foreach ($this->tempFiles as $fileName) {
@@ -125,14 +152,23 @@ final class Vim
     /**
      * @return string
      */
-    private function getCommand() : string 
+    private function getCommand() : string
     {
-        return 
-            $this->editor .  ' ' .
-            (string) $this->options . ' ' .
-            implode(' ', array_map(function(string $path) {
+        $command = [];
+
+        if (!empty($this->prependCommand)) {
+            $command[] = escapeshellcmd($this->prependCommand) . " &&";
+        }
+
+        $command = array_merge($command, [
+            $this->editor,
+            (string)$this->options,
+            implode(' ', array_map(function (string $path) {
                 return escapeshellarg($path);
-            }, $this->getFilesPath())) . ' ' .
-            sprintf('> /proc/%s/fd/1', posix_getpid());
+            }, $this->getFilesPath())),
+            sprintf('> /proc/%s/fd/1', posix_getpid())
+        ]);
+
+        return implode(" ", $command);
     }
 }

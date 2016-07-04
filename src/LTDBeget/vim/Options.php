@@ -30,6 +30,61 @@ final class Options
     private $readonlyMode = false;
 
     /**
+     * @var string
+     */
+    private $encoding;
+
+
+    /**
+     * @var string
+     */
+    private $termEncoding;
+
+
+    /**
+     * @return string
+     */
+    public function getTermEncoding()
+    {
+        return $this->termEncoding;
+    }
+
+
+    /**
+     * @param string $termEncoding
+     *
+     * @return Options
+     */
+    public function setTermEncoding(string $termEncoding)
+    {
+        $this->termEncoding = $termEncoding;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEncoding()
+    {
+        return $this->encoding;
+    }
+
+
+    /**
+     * set encoding=<your encoding>
+     * @param string $encoding
+     *
+     * @return Options
+     */
+    public function setEncoding(string $encoding) : Options
+    {
+        $this->encoding = $encoding;
+
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isDiffMode()
@@ -82,17 +137,17 @@ final class Options
     public function setReadonlyMode(bool $readonlyMode) : Options
     {
         $this->readonlyMode = $readonlyMode;
-        
+
         return $this;
     }
 
     /**
      * @return string
      */
-    public function __toString() : string 
+    public function __toString() : string
     {
         $options = [];
-        
+
         if($this->isDiffMode()) {
             $options[] = '-d';
         }
@@ -104,7 +159,15 @@ final class Options
         if($this->isReadonlyMode()) {
             $options[] = '-R';
         }
-        
+
+        if($this->encoding) {
+            $options[] = "-c 'set encoding=".escapeshellarg($this->encoding)."'";
+        }
+
+        if($this->termEncoding) {
+            $options[] = "-c 'set termencoding=".escapeshellarg($this->termEncoding)."'";
+        }
+
         return implode(' ', $options);
     }
 }
