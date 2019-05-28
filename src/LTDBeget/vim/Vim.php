@@ -81,7 +81,7 @@ final class Vim
      */
     public function execute()
     {
-        system($this->getCommand());
+        passthru($this->getCommand());
     }
 
     /**
@@ -166,7 +166,7 @@ final class Vim
             implode(' ', array_map(function (string $path) {
                 return escapeshellarg($path);
             }, $this->getFilesPath())),
-            sprintf('> /proc/%s/fd/1', posix_getpid())
+            '2> /dev/null'
         ]);
 
         return implode(" ", $command);
